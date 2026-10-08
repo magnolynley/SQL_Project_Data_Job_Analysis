@@ -101,13 +101,12 @@ Analyzes which specific technical skills are required across the top 10 highest-
         ORDER by 
         salary_year_avg DESC;
 ```
-Here's the breakdown of the skills required for high-paying roles:
+Here's the breakdown of the skills required for the top-paying Data Analyst roles:
 
-* **The Big Three Foundation:** SQL, Python, and Tableau form the core required tech stack, appearing in 75% to 100% of top-earning job descriptions.
+* **The Big Three Foundation:** **SQL** (8 postings), **Python** (7 postings), and **Tableau** (6 postings) are the most frequently requested skills among top-earning job descriptions.
+* **Data Science & Analytics Tools:** **R**, **Pandas**, and **Snowflake** follow closely, proving that analytical libraries and cloud data warehousing are key drivers in high-paying roles.
+* **Cloud & Collaboration Tech:** Cloud platforms (**AWS**, **Azure**) and developer collaboration tools (**GitLab**, **Jira**, **Bitbucket**) appear regularly across top-tier listings, averaging salaries between $189k and $222k.
 
-* **Cloud & Big Data Premium:** Skills like AWS, Azure, PySpark, and Databricks are concentrated in leadership and director-level listings, pushing average compensation above $220,000.
-
-* **Traditional Tools Remain Relevant:** Traditional tools like Excel and PowerPoint remain present in top roles, but almost always in conjunction with advanced querying and programming platforms.
 
 
 ![Top Paying Job Skills](/sql_load-20260614T134302Z-3-001/project_sql/Assets/2_top_paying_job_skills.png)
@@ -183,7 +182,7 @@ Here's the breakdown of skills associated with the highest average salaries:
 
 * **DevOps & Engineering Integration:** Skills like Bitbucket ($189,155), GitLab ($154,500), and Kubernetes ($132,500) show that data analysts who adopt software engineering and CI/CD practices command significantly higher compensation.
 
-* **Python Ecosystem Dominance:** Core Python stack tools—Jupyter ($152,777), Pandas ($151,821), and NumPy ($143,513)—consistently rank above traditional business intelligence platforms.
+* **Python Ecosystem Dominance:** Core Python stack tools—Jupyter ($152,777) and Pandas ($151,821)—consistently rank among the top-paying technical skills, demonstrating high employer demand for programmatic data handling.
 
 * **AutoML & Cloud AI Premium:** Platform-level machine learning tools such as Watson ($160,515) and DataRobot ($155,486) bridge the gap between business analysis and predictive AI engineering.
 
@@ -317,22 +316,9 @@ Here's the breakdown of optimal skills combining high demand and high salary:
 
 * **Top Pay in High Demand:** Among the top 5 most demanded skills, Python ($101,397) and R ($100,499) break the six-figure annual salary threshold.
 
-* **Visualization Tools:** Tableau leads Power BI in job volume (230 vs 110 listings), though both offer virtually identical compensation (~$97k–$99k).
+* **Visualization Tools:** While Tableau heavily outperforms Power BI in job volume (230 vs 110 listings—more than 2x the demand), both command similar average salary ranges (~$97k to $99k).
 
-* **Niche Top Earners:** Looking beyond the top 10 most demanded, specialized cloud technologies in the dataset like Go ($115,320), Confluence ($114,210), and Snowflake ($112,948) offer the highest overall salaries across the full dataset.
-
-
-#### Data Quality & Refactoring Methodology
-
-**Why I Rewrote the SQL Query:**
-An audit of the underlying `skills_dim` dimension table revealed systemic entity duplication across the database. Several technologies—including **powerbi**, **mongodb**, **firebase**, **ruby**, **sqlserver**, **asp.netcore**, and **sas**—were registered under multiple distinct primary keys (`skill_id`).
-
-* **The Issue:** Grouping by `skill_id` split metrics across duplicate IDs, underrepresenting true job demand for affected tools (for instance, splitting SAS across `skill_id 7` and `skill_id 186`).
-* **The Solution:** To accurately aggregate market demand, I refactored the query to group by `LOWER(skills_dim.skills)`. *While grouping by a non-primary key text column is generally not database best practice, it was the necessary engineering approach here to resolve entity duplication and expose the true optimal skills.*
-* **The Impact:**
-  1. Consolidated duplicate skill records across the dataset into accurate, unified market totals.
-  2. Elevated **SAS** to its true position (#6 overall with 126 job mentions and a $98,902 average salary).
-  3. Restored ranking integrity, allowing previously obscured high-demand tools like **Looker** and **MS Word** to properly surface in the Top 10 list.
+* **High-Paying Niche Skills:** Specialized tools sitting outside the top 10 most demanded—such as Go ($115,320), Hadoop ($113,193), Snowflake ($112,948), and Azure ($111,225)—command significantly higher average salaries due to their technical complexity.
 
 
 ### Original version, grouped by skill_ID
@@ -349,6 +335,19 @@ An audit of the underlying `skills_dim` dimension table revealed systemic entity
 | 186 | sas | 63 | $98,902 |
 | 185 | powerpoint | 58 | $88,701 |
 | 183 | looker | 49 | $103,795 |
+
+
+#### Data Quality & Refactoring Methodology
+
+**Why I Rewrote the SQL Query:**
+An audit of the underlying `skills_dim` dimension table revealed systemic entity duplication across the database. Several technologies—including **powerbi**, **mongodb**, **firebase**, **ruby**, **sqlserver**, **asp.netcore**, and **sas**—were registered under multiple distinct primary keys (`skill_id`).
+
+* **The Issue:** Grouping by `skill_id` split metrics across duplicate IDs, underrepresenting true job demand for affected tools (for instance, splitting SAS across `skill_id 7` and `skill_id 186`).
+* **The Solution:** To accurately aggregate market demand, I refactored the query to group by `LOWER(skills_dim.skills)`. *While grouping by a non-primary key text column is generally not database best practice, it was the necessary engineering approach here to resolve entity duplication and expose the true optimal skills.*
+* **The Impact:**
+  1. Consolidated duplicate skill records across the dataset into accurate, unified market totals.
+  2. Elevated **SAS** to its true position (#6 overall with 126 job mentions and a $98,902 average salary).
+  3. Restored ranking integrity, allowing previously obscured high-demand tools like **Looker** and **MS Word** to properly surface in the Top 10 list.
 
 
 ### Rewritten version result, grouped by skills (avoiding duplicates)
