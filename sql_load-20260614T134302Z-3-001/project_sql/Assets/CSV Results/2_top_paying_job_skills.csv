@@ -1,0 +1,30 @@
+Row Labels,Count of skills,Count of job_title
+sql,8,8
+python,7,7
+tableau,6,6
+r,4,4
+excel,3,3
+snowflake,3,3
+pandas,3,3
+numpy,2,2
+gitlab,2,2
+oracle,2,2
+power bi,2,2
+go,2,2
+confluence,2,2
+azure,2,2
+aws,2,2
+bitbucket,2,2
+jira,2,2
+atlassian,2,2
+databricks,1,1
+jupyter,1,1
+hadoop,1,1
+flow,1,1
+sap,1,1
+powerpoint,1,1
+crystal,1,1
+pyspark,1,1
+git,1,1
+jenkins,1,1
+Grand Total,66,66

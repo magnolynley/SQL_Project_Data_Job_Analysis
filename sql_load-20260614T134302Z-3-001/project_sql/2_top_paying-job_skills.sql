@@ -3,7 +3,7 @@ Question: What skills are required for the top-paying Data Analyst jobs?
 - Use the top 10 highest-paying Data Analyst jobs from first query
 - Add the spcific skills required for these roles
 -Why? It provides a detailed look at which high-paying jobs demand certain skills, helping job seekers understand which skills to develop that align with top salaries
-*/k
+*/
 With top_paying_job_skills AS
  (
     SELECT

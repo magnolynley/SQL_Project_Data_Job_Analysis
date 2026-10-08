@@ -52,16 +52,43 @@ INNER JOIN average_salary on skills_demand.skill_id = average_salary.skill_id
 WHERE
 demand_count>10
 order BY
-avg_salary desc,
-demand_count DESC
+demand_count DESC,
+avg_salary desc
+Limit 25
 
-limit 25
 
-/*rewrite query*/
+
+/*rewritten query- shorter version*/
 Select
 skills_dim.skill_id,
 skills,
-count(skills_dim.skill_id) as demand_count,
+count(skills_job_dim.job_id) as demand_count,
+round(avg(salary_year_avg),0) as avg_salary
+
+from job_postings_fact
+left join skills_job_dim on job_postings_fact.job_id = skills_job_dim.job_id
+left join skills_dim on skills_job_dim.skill_id = skills_dim.skill_id
+
+WHERE
+job_title_short = 'Data Analyst'
+and job_work_from_home = 'True'
+and salary_year_avg is not null
+
+group by
+skills_dim.skill_id
+
+having
+count(skills_job_dim.job_id) > 10
+order by
+demand_count desc,
+avg_salary desc
+Limit 25;
+
+/*rewritten query, avoiding SAS duplicates*/
+
+Select
+lower(skills_dim.skills) as skills_name,
+count(skills_job_dim.job_id) as demand_count,
 round(avg(salary_year_avg),0) as avg_salary
 
 from job_postings_fact
@@ -74,10 +101,13 @@ and job_work_from_home = 'True'
 and salary_year_avg is not null
 
 group by
-skills_dim.skill_id
+lower(skills_dim.skills)
 
 having
-count(skills_dim.skill_id) > 10
+count(skills_job_dim.job_id) > 10
+
 order by
-avg_salary desc,
-demand_count desc
+demand_count desc,
+avg_salary desc
+
+limit 25
