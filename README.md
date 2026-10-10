@@ -342,7 +342,7 @@ Here's the breakdown of optimal skills combining high demand and high salary:
 **Why I Rewrote the SQL Query:**
 An audit of the underlying `skills_dim` dimension table revealed systemic entity duplication across the database. Several technologies—including **powerbi**, **mongodb**, **firebase**, **ruby**, **sqlserver**, **asp.netcore**, and **sas**—were registered under multiple distinct primary keys (`skill_id`).
 
-* **The Issue:** Grouping by `skill_id` split metrics across duplicate IDs, underrepresenting true job demand for affected tools (for instance, splitting SAS across `skill_id 7` and `skill_id 186`).
+* **The Issue:** Grouping by skill_id split metrics across multiple distinct IDs for the same skill name, underrepresenting true job demand for affected tools (for instance, splitting SAS across `skill_id 7` and `skill_id 186`).
 * **The Solution:** To accurately aggregate market demand, I refactored the query to group by `LOWER(skills_dim.skills)`. *While grouping by a non-primary key text column is generally not database best practice, it was the necessary engineering approach here to resolve entity duplication and expose the true optimal skills.*
 * **The Impact:**
   1. Consolidated duplicate skill records across the dataset into accurate, unified market totals.
@@ -389,7 +389,7 @@ skilltable.skills
 FROM skilltable
 INNER JOIN skills_dim ON skilltable.skills = skills_dim.skills
 ```
-The following table lists the skills with duplicate primary keys (skill_id) in the database. The audit identified a total of 7 distinct skills that have duplicate entries across 14 rows in the database:
+The following table lists the skill names that have duplicate entries under different primary keys (skill_id) in the database. The audit identified a total of 7 distinct skills that have duplicate entries across 14 rows in the database:
 
 | Skill ID | Skill Name |
 | :---: | :--- |
