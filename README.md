@@ -180,12 +180,13 @@ Here's the breakdown of skills associated with the highest average salaries:
 
 * **Big Data Leads the Market:** PySpark stands out as the only skill exceeding $200,000 annually, highlighting the premium employers place on distributed computing expertise.
 
-* **DevOps & Engineering Integration:** Skills like Bitbucket ($189,155), GitLab ($154,500), and Kubernetes ($132,500) show that data analysts who adopt software engineering and CI/CD practices command significantly higher compensation.
+* **DevOps & Version Control Integration:** Tools like Bitbucket ($189,155) and GitLab ($154,500) demonstrate that data professionals who adopt software engineering and CI/CD pipelines command significantly higher compensation.
 
-* **Python Ecosystem Dominance:** Core Python stack tools—Jupyter ($152,777) and Pandas ($151,821)—consistently rank among the top-paying technical skills, demonstrating high employer demand for programmatic data handling.
+* **Data Management & Cloud AI Premium:** Architectural platforms such as Couchbase ($160,515) alongside AI/ML tools like Watson ($160,515) and DataRobot ($155,486) bridge the gap between heavy data storage, business analysis, and predictive engineering.
 
-* **AutoML & Cloud AI Premium:** Platform-level machine learning tools such as Watson ($160,515) and DataRobot ($155,486) bridge the gap between business analysis and predictive AI engineering.
+* **Python Ecosystem & Application Development:** Core tech stack tools—including Swift ($153,750), Jupyter ($152,777), and Pandas ($151,821)—consistently rank among the top-paying technical skills, demonstrating high employer demand for programmatic data handling and mobile development integration.
 
+* **Enterprise Search & Analytics:** Elasticsearch ($145,000) rounds out the top 10, emphasizing the value of real-time search and log analytics capabilities in high-paying roles.
 
 | Rank | Skill | Average Annual Salary |
 | :---: | :--- | :---: |
