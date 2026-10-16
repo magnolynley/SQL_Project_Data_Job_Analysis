@@ -211,14 +211,18 @@ Combines demand count and average salary using CTEs to highlight skills that off
     skills_dim.skill_id,
     skills_dim.skills,
     COUNT(skills_job_dim.job_id) AS demand_count
+
     FROM 
     job_postings_fact
+
     INNER JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
     INNER JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+    
     WHERE
     job_title_short = 'Data Analyst' AND
     salary_year_avg IS NOT NULL AND
     job_work_from_home = True
+    
     GROUP BY
     skills_dim.skill_id
     ),
@@ -228,14 +232,18 @@ Combines demand count and average salary using CTEs to highlight skills that off
         skills_dim.skill_id,
         skills_dim.skills,
         ROUND(AVG(salary_year_avg),0) AS avg_salary
+        
         FROM 
         job_postings_fact
+
         INNER JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
         INNER JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+        
         WHERE
         job_title_short = 'Data Analyst' AND
         salary_year_avg IS NOT NULL AND
         job_work_from_home = True
+
         GROUP BY
         skills_dim.skill_id
         )
@@ -249,8 +257,10 @@ Combines demand count and average salary using CTEs to highlight skills that off
             FROM skills_demand
 
             INNER JOIN average_salary ON skills_demand.skill_id = average_salary.skill_id
+
             WHERE
             demand_count>10
+
             ORDER BY
             avg_salary DESC,
             demand_count DESC
@@ -266,8 +276,9 @@ Combines demand count and average salary using CTEs to highlight skills that off
     ROUND(AVG(salary_year_avg),0) AS avg_salary
 
     FROM job_postings_fact
-    LEFT JOIN skills_job_dim ON job_postings_fact.job_id =skills_job_dim.job_id
-    LEFT JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+
+    INNER JOIN skills_job_dim ON job_postings_fact.job_id =skills_job_dim.job_id
+    INNER JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
 
     WHERE
     job_title_short = 'Data Analyst'
@@ -279,6 +290,7 @@ Combines demand count and average salary using CTEs to highlight skills that off
 
     HAVING
     COUNT(skills_dim.skill_id) > 10
+
     ORDER BY
     avg_salary DESC,
     demand_count DESC;
@@ -291,8 +303,9 @@ Combines demand count and average salary using CTEs to highlight skills that off
     ROUND(AVG(salary_year_avg),0) as avg_salary
 
     FROM job_postings_fact
-    LEFT JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
-    LEFT JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+
+    INNER JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+    INNER JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
 
     WHERE
     job_title_short = 'Data Analyst'
@@ -309,7 +322,7 @@ Combines demand count and average salary using CTEs to highlight skills that off
     demand_count DESC,
     avg_salary DESC
 
-    LIMIT 25
+    LIMIT 25;
 ```
 Here's the breakdown of optimal skills combining high demand and high salary:
 
@@ -371,15 +384,17 @@ An audit of the underlying `skills_dim` dimension table revealed systemic entity
 Before executing the final analysis, I conducted a data quality audit using a Common Table Expression (CTE) to check for entity redundancy and schema issues in the `skills_dim` table.
 
 ```sql
-With skilltable AS 
+WITH skilltable AS 
 (SELECT
 skills,
 COUNT(skills) AS count
 
 FROM 
 skills_dim
+
 GROUP BY
 skills
+
 HAVING
 COUNT(skills) > 1)
 
@@ -389,6 +404,8 @@ skilltable.skills
 
 FROM skilltable
 INNER JOIN skills_dim ON skilltable.skills = skills_dim.skills
+;
+
 ```
 The following table lists the skill names that have duplicate entries under different primary keys (skill_id) in the database. The audit identified a total of 7 distinct skills that have duplicate entries across 14 rows in the database:
 

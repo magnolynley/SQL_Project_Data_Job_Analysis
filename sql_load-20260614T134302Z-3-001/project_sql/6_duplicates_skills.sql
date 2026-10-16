@@ -11,8 +11,10 @@ COUNT(skills) AS count
 
 FROM 
 skills_dim
+
 GROUP BY
 skills
+
 HAVING
 count(skills) > 1)
 
