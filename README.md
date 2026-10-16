@@ -42,6 +42,7 @@ Identifies the top 10 highest-paying remote Data Analyst positions available in 
 
         FROM
         job_postings_fact
+
         LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
 
         WHERE
@@ -81,23 +82,31 @@ Analyzes which specific technical skills are required across the top 10 highest-
             job_title,
             salary_year_avg,
             name AS company_name
-            FEOM
+
+            FROM
             job_postings_fact
+
             LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
+
             WHERE
             job_title_short LIKE 'Data Analyst' AND
             job_location = 'Anywhere'  AND
             salary_year_avg IS NOT NULL
+
             ORDER BY
             salary_year_avg DESC
+
             LIMIT 10
         )
         SELECT 
         top_paying_job_skills.*,
         skills
+
         FROM top_paying_job_skills
+
         INNER JOIN skills_job_dim ON top_paying_job_skills.job_id = skills_job_dim.job_id
         INNER JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+
         ORDER by 
         salary_year_avg DESC;
 ```
@@ -119,18 +128,24 @@ Identifies the top 5 most frequently requested skills across all remote Data Ana
 
         SELECT
         skills,
-        count(skills_job_dim.job_id) as demand_count
+        COUNT(skills_job_dim.job_id) AS demand_count
+
         FROM
         job_postings_fact
+
         INNER JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
         INNER JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+
         WHERE
         job_title_short = 'Data Analyst' AND
         job_work_from_home = True
+
         GROUP BY
         skills
+
         ORDER BY
         demand_count DESC
+
         LIMIT 5;
 ```
 Here's the breakdown of the most in-demand skills overall:
@@ -164,16 +179,21 @@ Examines the highest average salaries associated with specific technical skills.
 
     FROM
     job_postings_fact
+
     INNER JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
     INNER JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+
     WHERE
     job_title_short = 'Data Analyst' AND
     salary_year_avg IS NOT NULL AND
     job_work_from_home = True
+
     GROUP BY
     skills
+
     ORDER BY
     avg_salary DESC
+
     LIMIT 25;
 ```
 Here's the breakdown of skills associated with the highest average salaries:
@@ -396,13 +416,15 @@ GROUP BY
 skills
 
 HAVING
-COUNT(skills) > 1)
+COUNT(skills) > 1
+)
 
-Select
+SELECT
 skill_ID,
 skilltable.skills
 
 FROM skilltable
+
 INNER JOIN skills_dim ON skilltable.skills = skills_dim.skills
 ;
 
