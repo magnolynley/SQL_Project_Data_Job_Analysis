@@ -10,14 +10,14 @@ salary_year_avg,
 job_location,
 job_schedule_type,
 job_posted_date,
-name as company_name
-From
+Name AS company_name
+FROM
 job_postings_fact
-left join company_dim on job_postings_fact.company_id = company_dim.company_id
+LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
 WHERE
-job_title_short like 'Data Analyst' AND
+job_title_short LIKE 'Data Analyst' AND
 job_location = 'Anywhere'  AND
-salary_year_avg is not NULL
-order BY
+salary_year_avg IS NOT NULL
+ORDER BY
 salary_year_avg desc
-limit 10
+LIMIT 10

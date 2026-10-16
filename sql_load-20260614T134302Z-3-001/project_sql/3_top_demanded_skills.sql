@@ -5,18 +5,23 @@
 - Why? Retrieves the top 5 skills with the highest demand in the job market, providing insights into the most valuable skills for job seekers.
 */
 
-Select 
+SELECT 
 skills,
-count(skills_job_dim.job_id) as demand_count
-from 
+COUNT(skills_job_dim.job_id) AS demand_count
+
+FROM 
 job_postings_fact
-inner join skills_job_dim on job_postings_fact.job_id = skills_job_dim.job_id
-inner join skills_dim on skills_job_dim.skill_id = skills_dim.skill_id
+INNER JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+INNER JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+
 WHERE
 job_title_short = 'Data Analyst' AND
 job_work_from_home = True
-group BY
+
+GROUP BY
 skills
-order BY
+
+ORDER BY
 demand_count DESC
-limit 10
+
+LIMIT 10

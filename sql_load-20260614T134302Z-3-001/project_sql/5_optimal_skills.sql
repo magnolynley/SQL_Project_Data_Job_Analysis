@@ -3,40 +3,44 @@
 -Concentrates on remote positions with specified salaries
 -Why? Targets skills that offer job seurity(high demand) and financial benefits(high salaries), offering strategic insights for career development in data analysis.
 */
-with skills_demand as 
-    (Select 
+WITH skills_demand AS 
+    (SELECT 
     skills_dim.skill_id,
     skills_dim.skills,
-    count(skills_job_dim.job_id) as demand_count
-    from 
+    COUNT(skills_job_dim.job_id) AS demand_count
+
+    FROM 
     job_postings_fact
-    inner join skills_job_dim on job_postings_fact.job_id = skills_job_dim.job_id
-    inner join skills_dim on skills_job_dim.skill_id = skills_dim.skill_id
+    INNER JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+    INNER JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+    
     WHERE
     job_title_short = 'Data Analyst' AND
-    salary_year_avg is not null AND
+    salary_year_avg IS NOT NULL AND
     job_work_from_home = True
-    group BY
+
+    GROUP BY
     skills_dim.skill_id
    
     ),
 
- average_salary as
-    (Select 
+ average_salary AS
+    (SELECT 
     skills_dim.skill_id,
     skills_dim.skills,
-    round(avg(salary_year_avg),0) as avg_salary
+    ROUND(AVG(salary_year_avg),0) AS avg_salary
 
-    from 
+    FROM 
     job_postings_fact
-    inner join skills_job_dim on job_postings_fact.job_id = skills_job_dim.job_id
-    inner join skills_dim on skills_job_dim.skill_id = skills_dim.skill_id
+    INNER JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+    INNER JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+    
     WHERE
     job_title_short = 'Data Analyst' AND
-    salary_year_avg is not NULL AND
+    salary_year_avg IS NOT NULL AND
     job_work_from_home = True
     
-    group BY
+    GROUP BY
     skills_dim.skill_id
    
     )
@@ -46,68 +50,74 @@ skills_demand.skills,
 skills_demand.demand_count,
 average_salary.avg_salary
 
-from skills_demand
+FROM skills_demand
 
-INNER JOIN average_salary on skills_demand.skill_id = average_salary.skill_id
+INNER JOIN average_salary ON skills_demand.skill_id = average_salary.skill_id
+
 WHERE
 demand_count>10
-order BY
+
+ORDER BY
 demand_count DESC,
-avg_salary desc
-Limit 25
+avg_salary DESC
+
+LIMIT 25
 
 
 
 /*rewritten query- shorter version*/
-Select
+SELECT
 skills_dim.skill_id,
 skills,
-count(skills_job_dim.job_id) as demand_count,
-round(avg(salary_year_avg),0) as avg_salary
+COUNT(skills_job_dim.job_id) AS demand_count,
+ROUND(AVG(salary_year_avg),0) AS avg_salary
 
-from job_postings_fact
-left join skills_job_dim on job_postings_fact.job_id = skills_job_dim.job_id
-left join skills_dim on skills_job_dim.skill_id = skills_dim.skill_id
+FROM job_postings_fact
+
+LEFT JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+LEFT JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
 
 WHERE
 job_title_short = 'Data Analyst'
-and job_work_from_home = 'True'
-and salary_year_avg is not null
+AND job_work_from_home = 'True'
+AND salary_year_avg IS NOT NULL
 
-group by
+GROUP BY
 skills_dim.skill_id
 
-having
-count(skills_job_dim.job_id) > 10
-order by
-demand_count desc,
-avg_salary desc
-Limit 25;
+HAVING
+COUNT(skills_job_dim.job_id) > 10
+
+ORDER BY
+demand_count DESC,
+avg_salary DESC
+
+LIMIT 25;
 
 /*rewritten query, avoiding SAS duplicates*/
 
-Select
-lower(skills_dim.skills) as skills_name,
-count(skills_job_dim.job_id) as demand_count,
-round(avg(salary_year_avg),0) as avg_salary
+SELECT
+LOWER(skills_dim.skills) AS skills_name,
+COUNT(skills_job_dim.job_id) AS demand_count,
+ROUND(AVG(salary_year_avg),0) AS avg_salary
 
-from job_postings_fact
-left join skills_job_dim on job_postings_fact.job_id =skills_job_dim.job_id
-left join skills_dim on skills_job_dim.skill_id = skills_dim.skill_id
+FROM job_postings_fact
+LEFT JOIN skills_job_dim ON job_postings_fact.job_id =skills_job_dim.job_id
+LEFT JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
 
 WHERE
 job_title_short = 'Data Analyst'
-and job_work_from_home = 'True'
-and salary_year_avg is not null
+AND job_work_from_home = 'True'
+AND salary_year_avg IS NOT NULL
 
-group by
-lower(skills_dim.skills)
+GROUP BY
+LOWER(skills_dim.skills)
 
-having
+HAVING
 count(skills_job_dim.job_id) > 10
 
-order by
-demand_count desc,
-avg_salary desc
+ORDER BY
+demand_count DESC,
+avg_salary DESC
 
-limit 25
+LIMIT 25
