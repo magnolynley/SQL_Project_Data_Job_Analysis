@@ -293,7 +293,7 @@ Combines demand count and average salary using CTEs to highlight skills that off
     skills_dim.skill_id,
     skills,
     COUNT(skills_dim.skill_id) AS demand_count,
-    ROUND(AVG(salary_year_avg),0) AS avg_salary
+    ROUND(AVG(job_postings_fact.salary_year_avg),0) AS avg_salary
 
     FROM job_postings_fact
 
@@ -320,7 +320,7 @@ Combines demand count and average salary using CTEs to highlight skills that off
     SELECT
     LOWER(skills_dim.skills) as skills_name,
     COUNT(skills_job_dim.job_id) as demand_count,
-    ROUND(AVG(salary_year_avg),0) as avg_salary
+    ROUND(AVG(job_postings_fact.salary_year_avg),0) as avg_salary
 
     FROM job_postings_fact
 
@@ -357,19 +357,18 @@ Here's the breakdown of optimal skills combining high demand and high salary:
 
 ### Original version, grouped by skill_ID
 
-| Skill ID | Skill Name | Demand Count | Average Salary |
-| :---: | :--- | :---: | :---: |
+| skill_id | skills | demand_count | avg_salary |
+| --- | --- | --- | --- |
 | 0 | sql | 398 | $97,237 |
 | 181 | excel | 256 | $87,288 |
 | 1 | python | 236 | $101,397 |
 | 182 | tableau | 230 | $99,288 |
 | 5 | r | 148 | $100,499 |
-| 184 | power bi | 110 | $97,431 |
+| 183 | power bi | 110 | $97,431 |
 | 7 | sas | 63 | $98,902 |
 | 186 | sas | 63 | $98,902 |
-| 185 | powerpoint | 58 | $88,701 |
-| 183 | looker | 49 | $103,795 |
-
+| 196 | powerpoint | 58 | $88,701 |
+| 185 | looker | 49 | $103,795 |
 
 #### Data Quality & Refactoring Methodology
 
@@ -377,6 +376,7 @@ Here's the breakdown of optimal skills combining high demand and high salary:
 An audit of the underlying `skills_dim` dimension table revealed systemic entity duplication across the database. Several technologies—including **powerbi**, **mongodb**, **firebase**, **ruby**, **sqlserver**, **asp.netcore**, and **sas**—were registered under multiple distinct primary keys (`skill_id`).
 
 * **The Issue:** Grouping by skill_id split metrics across multiple distinct IDs for the same skill name, underrepresenting true job demand for affected tools (for instance, splitting SAS across `skill_id 7` and `skill_id 186`).
+* **Database Schema Insight:** Further investigation into the dimension table revealed that certain skills (such as `sas`) were intentionally registered under multiple primary keys (`skill_id`) to accommodate overlapping technical classifications (e.g., separating programming tags from analytical tool tags). However, from a market analytics perspective, these represent a single technology entity. Consolidating them via skill-name aggregation ensures that true aggregate demand and compensation metrics are accurately reflected without artificial fragmentation.
 * **The Solution:** To accurately aggregate market demand, I refactored the query to group by `LOWER(skills_dim.skills)`. *While grouping by a non-primary key text column is generally not database best practice, it was the necessary engineering approach here to resolve entity duplication and expose the true optimal skills.*
 * **The Impact:**
   1. Consolidated duplicate skill records across the dataset into accurate, unified market totals.
