@@ -460,9 +460,6 @@ Specifically, several key technologies (such as `powerbi`, `sqlserver`, and `asp
 | 205 | powerbi | 3 |
 | 209 | msaccess | 2 |
 
-
-# What I Learned
-
 # What I Learned
 
 Through executing this project, I strengthened my core data analytics, data hygiene, and SQL query optimization competencies:
@@ -485,8 +482,6 @@ Through executing this project, I strengthened my core data analytics, data hygi
 4. **Skills with Higher Salaries:** Niche technical expertise commands the highest average compensation, with specialized technologies and data engineering tools (e.g., **PySpark**, **Bitbucket**, **Couchbase**, **Watson**, **DataRobot**) yielding premium pay due to low market supply.
 
 5. **Optimal Skills for Job Market Value:** **SQL** and **Excel** emerge as the most optimal skills to learn. SQL leads all skills with 398 high-paying job mentions and an average salary of $97,237, followed closely by Excel with 256 mentions ($87,288). Together with **Python** (236 mentions, $101,397), these core tools offer the best balance of job market demand, security, and strong financial return.
-
-### Closing Thoughts
 
 ### Closing Thoughts
 
