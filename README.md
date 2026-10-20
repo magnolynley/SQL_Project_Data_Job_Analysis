@@ -373,15 +373,14 @@ Here's the breakdown of optimal skills combining high demand and high salary:
 #### Data Quality & Refactoring Methodology
 
 **Why I Rewrote the SQL Query:**
-An audit of the underlying `skills_dim` dimension table revealed systemic entity duplication across the database. Several technologies—including **powerbi**, **mongodb**, **firebase**, **ruby**, **sqlserver**, **asp.netcore**, and **sas**—were registered under multiple distinct primary keys (`skill_id`).
+An audit of the underlying `skills_dim` dimension table revealed systemic entity duplication across the database. Normalizing text strings (using `LOWER()` and `REPLACE()` to handle formatting inconsistencies and spaces) uncovered that several key technologies—including **powerbi**, **sqlserver**, **asp.netcore**, **sas**, **mongodb**, **firebase**, **ruby**, and others—were registered across multiple distinct primary keys (`skill_id`), with some fragmented into as many as three separate entries.
 
-* **The Issue:** Grouping by skill_id split metrics across multiple distinct IDs for the same skill name, underrepresenting true job demand for affected tools (for instance, splitting SAS across `skill_id 7` and `skill_id 186`).
-* **Database Schema Insight:** Further investigation into the dimension table revealed that certain skills (such as `sas`) were intentionally registered under multiple primary keys (`skill_id`) to accommodate overlapping technical classifications (e.g., separating programming tags from analytical tool tags). However, from a market analytics perspective, these represent a single technology entity. Consolidating them via skill-name aggregation ensures that true aggregate demand and compensation metrics are accurately reflected without artificial fragmentation.
-* **The Solution:** To accurately aggregate market demand, I refactored the query to group by `LOWER(skills_dim.skills)`. *While grouping by a non-primary key text column is generally not database best practice, it was the necessary engineering approach here to resolve entity duplication and expose the true optimal skills.*
+* **The Issue:** Grouping strictly by `skill_id` split market metrics across duplicate keys, severely underrepresenting true job demand and compensation for affected tools (for instance, fracturing Power BI across IDs `183`, `203`, and `205`).
+* **The Solution:** To accurately aggregate market demand, I refactored the query to group by `LOWER(REPLACE(skills_dim.skills, ' ', ''))`. *While grouping by a non-primary key text column is traditionally discouraged in database design, it was the essential engineering workaround required here to resolve systemic entity duplication and uncover true market standings.*
 * **The Impact:**
-  1. Consolidated duplicate skill records across the dataset into accurate, unified market totals.
+  1. Consolidated duplicate and space-fragmented skill records across the dataset into accurate, unified market totals.
   2. Elevated **SAS** to its true position (#6 overall with 126 job mentions and a $98,902 average salary).
-  3. Restored ranking integrity, allowing previously obscured high-demand tools like **Looker** and **MS Word** to properly surface in the Top 10 list.
+  3. Restored ranking integrity, ensuring that top-tier demand metrics reflect absolute reality rather than artifacts of flawed data entry.
 
 
 ### Rewritten version result, grouped by skills (avoiding duplicates)
@@ -406,55 +405,70 @@ Before executing the final analysis, I conducted a data quality audit using a Co
 ```sql
 WITH skilltable AS 
 (SELECT
-skills,
+REPLACE(LOWER(skills),' ','') as skills,
 COUNT(skills) AS count
 
 FROM 
 skills_dim
 
 GROUP BY
-skills
+REPLACE(LOWER(skills),' ','')
 
 HAVING
-COUNT(skills) > 1
-)
+COUNT(skills) > 1)
+
 
 SELECT
 skill_ID,
-skilltable.skills
+skilltable.skills,
+count
 
 FROM skilltable
-
-INNER JOIN skills_dim ON skilltable.skills = skills_dim.skills
+INNER JOIN skills_dim ON skilltable.skills = REPLACE(LOWER(skills_dim.skills),' ','')
 ;
 
 ```
-The following table lists the skill names that have duplicate entries under different primary keys (skill_id) in the database. The audit identified a total of 7 distinct skills that have duplicate entries across 14 rows in the database:
+The following table lists the comprehensive results of a database schema audit. By normalizing the text strings (using `LOWER()` and `REPLACE()` to strip spaces and formatting inconsistencies), the audit revealed deeper data hygiene anomalies across the dimension table. 
 
-| Skill ID | Skill Name |
-| :---: | :--- |
-| 7 | sas |
-| 18 | mongodb |
-| 30 | ruby |
-| 62 | mongodb |
-| 66 | firebase |
-| 71 | sqlserver |
-| 77 | sqlserver |
-| 82 | firebase |
-| 144 | ruby |
-| 164 | asp.netcore |
-| 166 | asp.netcore |
-| 186 | sas |
-| 203 | powerbi |
-| 205 | powerbi |
+Specifically, several key technologies (such as `powerbi`, `sqlserver`, and `asp.netcore`) were fragmented across **three** distinct primary keys (`skill_id`), while others appeared twice. Uncovering these hidden redundancies ensured that market demand metrics were accurately consolidated rather than artificially split or underrepresented.
 
+| skill_id | skills | count |
+| :--- | :--- | :--- |
+| 7 | sas | 2 |
+| 18 | mongodb | 2 |
+| 21 | visualbasic | 2 |
+| 30 | ruby | 2 |
+| 54 | visualbasic | 2 |
+| 61 | sqlserver | 3 |
+| 62 | mongodb | 2 |
+| 66 | firebase | 2 |
+| 71 | sqlserver | 3 |
+| 72 | sqlserver | 3 |
+| 82 | firebase | 2 |
+| 121 | huggingface | 2 |
+| 138 | huggingface | 2 |
+| 144 | ruby | 2 |
+| 150 | asp.netcore | 3 |
+| 153 | rubyonrails | 2 |
+| 164 | asp.netcore | 3 |
+| 165 | rubyonrails | 2 |
+| 166 | asp.netcore | 3 |
+| 183 | powerbi | 3 |
+| 186 | sas | 2 |
+| 202 | msaccess | 2 |
+| 203 | powerbi | 3 |
+| 205 | powerbi | 3 |
+| 209 | msaccess | 2 |
+
+
+# What I Learned
 
 # What I Learned
 
 Through executing this project, I strengthened my core data analytics, data hygiene, and SQL query optimization competencies:
 
-* **Advanced SQL & Data Cleansing:** Written complex aggregation queries using `GROUP BY`, aggregate functions (`AVG()`, `COUNT()`), and string normalization (`LOWER()`) to handle data hygiene issues and prevent entity duplication.
-* **Data Auditing & Quality Control:** Conducted schema audits using Common Table Expressions (CTEs) to detect duplicate entity records in dimension tables, ensuring metric integrity and accurate business intelligence.
+* **Advanced SQL & Data Cleansing:** Written complex aggregation queries using `GROUP BY`, aggregate functions (`AVG()`, `COUNT()`), and robust string normalization (`LOWER()` and `REPLACE()`) to handle data hygiene issues, strip hidden spaces, and prevent entity duplication.
+* **Data Auditing & Quality Control:** Conducted comprehensive schema audits using Common Table Expressions (CTEs) to detect duplicate entity records and multi-key fragmentations in dimension tables, ensuring metric integrity and accurate business intelligence.
 * **CTE Modularization:** Built structured, multi-step temporary tables using `WITH` clauses to maintain clean, readable, and well-organized query pipelines.
 * **Database Modeling & Relational Joins:** Connected fact (`job_postings_fact`) and dimension (`skills_dim`) tables across `INNER JOIN` and `LEFT JOIN` relationships using star schema principles.
 * **Developer Workflow:** Managed source code and version control using Git and VS Code, while documenting trade-offs, schema anomalies, and analytical takeaways in Markdown on GitHub.
@@ -474,6 +488,8 @@ Through executing this project, I strengthened my core data analytics, data hygi
 
 ### Closing Thoughts
 
-Working through this project was a huge milestone in my journey as an aspiring data analyst. Beyond practicing foundational SQL concepts like multi-table joins, CTEs, and aggregation, it taught me the importance of critical thinking and data hygiene. 
+### Closing Thoughts
 
-When I noticed entity duplication in the dataset (such as SAS, Power BI, and MongoDB split across multiple primary keys), I learned firsthand that running queries isn't just about getting code to execute—it's about ensuring the underlying data delivers accurate business truth. Resolving these edge cases to reveal the genuine Top 10 optimal skills gave me real confidence in my ability to audit datasets, troubleshoot unexpected results, and communicate data-driven insights effectively.
+Working through this project was a huge milestone in my journey as an aspiring data analyst. Beyond practicing foundational SQL concepts like multi-table joins, CTEs, and aggregation, it taught me the paramount importance of critical thinking and rigorous data hygiene.
+
+When I noticed entity duplication and formatting discrepancies in the dataset (such as SAS, Power BI, and MongoDB split across multiple primary keys and hidden spaces), I learned firsthand that running queries isn’t just about getting code to execute—it’s about ensuring the underlying data delivers accurate business truth. Resolving these edge cases using string normalization (`LOWER()`, `REPLACE()`) to reveal the genuine Top 10 optimal skills gave me real confidence in my ability to audit datasets, troubleshoot unexpected results, and communicate data-driven insights effectively.

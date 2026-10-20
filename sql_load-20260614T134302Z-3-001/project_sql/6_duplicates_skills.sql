@@ -6,22 +6,24 @@
 
 WITH skilltable AS 
 (SELECT
-skills,
+replace(lower(skills),' ','') as skills,
 COUNT(skills) AS count
 
 FROM 
 skills_dim
 
 GROUP BY
-skills
+replace(lower(skills),' ','')
 
 HAVING
 count(skills) > 1)
 
+
 SELECT
 skill_ID,
-skilltable.skills
+skilltable.skills,
+count
 
 FROM skilltable
-INNER JOIN skills_dim ON skilltable.skills = skills_dim.skills
+INNER JOIN skills_dim ON skilltable.skills = replace(lower(skills_dim.skills),' ','')
 
