@@ -5,25 +5,26 @@
  */
 
 WITH skilltable AS 
-(SELECT
-replace(lower(skills),' ','') as skills,
-COUNT(skills) AS count
+    (   
+        SELECT
+        REPLACE(LOWER(skills),' ','') as skills,
+        COUNT(skills) AS count
 
-FROM 
-skills_dim
+        FROM 
+        skills_dim
 
-GROUP BY
-replace(lower(skills),' ','')
+        GROUP BY
+        REPLACE(LOWER(skills),' ','')
 
-HAVING
-count(skills) > 1)
+        HAVING
+        COUNT(skills) > 1
+    )
 
 
-SELECT
-skill_ID,
-skilltable.skills,
-count
+    SELECT
+    skill_ID,
+    skilltable.skills
 
-FROM skilltable
-INNER JOIN skills_dim ON skilltable.skills = replace(lower(skills_dim.skills),' ','')
+    FROM skilltable
+    INNER JOIN skills_dim ON skilltable.skills = REPLACE(LOWER(skills_dim.skills),' ','')
 

@@ -97,7 +97,7 @@ LIMIT 25;
 /*rewritten query, avoiding SAS duplicates*/
 
 SELECT
-LOWER(skills_dim.skills) AS skills_name,
+REPLACE(LOWER(skills_dim.skills),' ','') AS skills_name,
 COUNT(skills_job_dim.job_id) AS demand_count,
 ROUND(AVG(job_postings_fact.salary_year_avg),0) AS avg_salary
 
@@ -112,8 +112,7 @@ AND job_work_from_home = 'True'
 AND salary_year_avg IS NOT NULL
 
 GROUP BY
-LOWER(skills_dim.skills)
-
+REPLACE(LOWER(skills_dim.skills),' ','')
 
 HAVING
 count(skills_job_dim.job_id) > 10

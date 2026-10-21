@@ -317,14 +317,14 @@ Combines demand count and average salary using CTEs to highlight skills that off
 
 /*rewritten query, avoiding SAS duplicates*/
 
-    SELECT
-    LOWER(skills_dim.skills) as skills_name,
-    COUNT(skills_job_dim.job_id) as demand_count,
-    ROUND(AVG(job_postings_fact.salary_year_avg),0) as avg_salary
+   SELECT
+    REPLACE(LOWER(skills_dim.skills),' ','') AS skills_name,
+    COUNT(skills_job_dim.job_id) AS demand_count,
+    ROUND(AVG(job_postings_fact.salary_year_avg),0) AS avg_salary
+
 
     FROM job_postings_fact
-
-    INNER JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+    INNER JOIN skills_job_dim ON job_postings_fact.job_id =skills_job_dim.job_id
     INNER JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
 
     WHERE
@@ -333,10 +333,10 @@ Combines demand count and average salary using CTEs to highlight skills that off
     AND salary_year_avg IS NOT NULL
 
     GROUP BY
-    LOWER(skills_dim.skills)
+    REPLACE(LOWER(skills_dim.skills),' ','')
 
     HAVING
-    COUNT(skills_job_dim.job_id) > 10
+    count(skills_job_dim.job_id) > 10
 
     ORDER BY
     demand_count DESC,
@@ -355,7 +355,7 @@ Here's the breakdown of optimal skills combining high demand and high salary:
 * **High-Paying Niche Skills:** Specialized tools sitting outside the top 10 most demanded—such as Go ($115,320), Hadoop ($113,193), Snowflake ($112,948), and Azure ($111,225)—command significantly higher average salaries due to their technical complexity.
 
 
-### Original version, grouped by skill_ID
+### Original query, grouped by skill_ID
 
 | skill_id | skills | demand_count | avg_salary |
 | --- | --- | --- | --- |
@@ -383,7 +383,7 @@ An audit of the underlying `skills_dim` dimension table revealed systemic entity
   3. Restored ranking integrity, ensuring that top-tier demand metrics reflect absolute reality rather than artifacts of flawed data entry.
 
 
-### Rewritten version result, grouped by skills (avoiding duplicates)
+### Rewritten query result, grouped by skills (avoiding duplicates)
 
 | Skill Name | Demand Count | Average Salary |
 | :--- | :---: | :---: |
@@ -404,61 +404,62 @@ Before executing the final analysis, I conducted a data quality audit using a Co
 
 ```sql
 WITH skilltable AS 
-(SELECT
-REPLACE(LOWER(skills),' ','') as skills,
-COUNT(skills) AS count
+    (
+        SELECT
+        REPLACE(LOWER(skills),' ','') as skills,
+        COUNT(skills) AS count
 
-FROM 
-skills_dim
+        FROM 
+        skills_dim
 
-GROUP BY
-REPLACE(LOWER(skills),' ','')
+        GROUP BY
+        REPLACE(LOWER(skills),' ','')
 
-HAVING
-COUNT(skills) > 1)
+        HAVING
+        COUNT(skills) > 1
+    )
 
 
-SELECT
-skill_ID,
-skilltable.skills,
-count
+    SELECT
+    skill_ID,
+    skilltable.skills
 
-FROM skilltable
-INNER JOIN skills_dim ON skilltable.skills = REPLACE(LOWER(skills_dim.skills),' ','')
+    FROM skilltable
+    INNER JOIN skills_dim ON skilltable.skills = REPLACE(LOWER(skills_dim.skills),' ','')
 ;
 
 ```
 The following table lists the comprehensive results of a database schema audit. By normalizing the text strings (using `LOWER()` and `REPLACE()` to strip spaces and formatting inconsistencies), the audit revealed deeper data hygiene anomalies across the dimension table. 
 
-Specifically, several key technologies (such as `powerbi`, `sqlserver`, and `asp.netcore`) were fragmented across **three** distinct primary keys (`skill_id`), while others appeared twice. Uncovering these hidden redundancies ensured that market demand metrics were accurately consolidated rather than artificially split or underrepresented.
+Specifically, several key technologies (such as 'powerbi', 'sqlserver', and 'asp.netcore') were fragmented across two or more distinct primary keys (skill_id) stemming from duplicate skill names. Uncovering these hidden redundancies ensured that market demand metrics were accurately consolidated rather than artificially split or underrepresented.
 
-| skill_id | skills | count |
-| :--- | :--- | :--- |
-| 7 | sas | 2 |
-| 18 | mongodb | 2 |
-| 21 | visualbasic | 2 |
-| 30 | ruby | 2 |
-| 54 | visualbasic | 2 |
-| 61 | sqlserver | 3 |
-| 62 | mongodb | 2 |
-| 66 | firebase | 2 |
-| 71 | sqlserver | 3 |
-| 72 | sqlserver | 3 |
-| 82 | firebase | 2 |
-| 121 | huggingface | 2 |
-| 138 | huggingface | 2 |
-| 144 | ruby | 2 |
-| 150 | asp.netcore | 3 |
-| 153 | rubyonrails | 2 |
-| 164 | asp.netcore | 3 |
-| 165 | rubyonrails | 2 |
-| 166 | asp.netcore | 3 |
-| 183 | powerbi | 3 |
-| 186 | sas | 2 |
-| 202 | msaccess | 2 |
-| 203 | powerbi | 3 |
-| 205 | powerbi | 3 |
-| 209 | msaccess | 2 |
+| skill_id | skills |
+| :--- | :--- |
+| 7 | sas |
+| 18 | mongodb |
+| 21 | visualbasic |
+| 30 | ruby |
+| 54 | visualbasic |
+| 61 | sqlserver |
+| 62 | mongodb |
+| 66 | firebase |
+| 71 | sqlserver |
+| 72 | sqlserver |
+| 82 | firebase |
+| 121 | huggingface |
+| 130 | huggingface |
+| 144 | ruby |
+| 150 | asp.netcore |
+| 153 | rubyonrails |
+| 164 | asp.netcore |
+| 165 | rubyonrails |
+| 166 | asp.netcore |
+| 183 | powerbi |
+| 186 | sas |
+| 202 | msaccess |
+| 203 | powerbi |
+| 205 | powerbi |
+| 209 | msaccess |
 
 # What I Learned
 
