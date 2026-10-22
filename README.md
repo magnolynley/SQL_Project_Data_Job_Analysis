@@ -381,6 +381,7 @@ An audit of the underlying `skills_dim` dimension table revealed systemic entity
   1. Consolidated duplicate and space-fragmented skill records across the dataset into accurate, unified market totals.
   2. Elevated **SAS** to its true position (#6 overall with 126 job mentions and a $98,902 average salary).
   3. Restored ranking integrity, ensuring that top-tier demand metrics reflect absolute reality rather than artifacts of flawed data entry.
+  4. Elevated Microsoft Word into the Top 10 ranking (48 job mentions and an $82,576 average salary) by resolving string fragmentation and whitespace anomalies.
 
 
 ### Rewritten query result, grouped by skills (avoiding duplicates)
