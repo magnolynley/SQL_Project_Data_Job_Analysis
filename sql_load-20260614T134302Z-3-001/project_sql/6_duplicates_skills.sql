@@ -28,3 +28,7 @@ WITH skilltable AS
     FROM skilltable
     INNER JOIN skills_dim ON skilltable.skills = REPLACE(LOWER(skills_dim.skills),' ','')
 
+/*
+The following table lists the comprehensive results of a database schema audit. By normalizing the text strings (using LOWER() and REPLACE() to strip spaces and formatting inconsistencies), the audit revealed deeper data hygiene anomalies across the dimension table.
+Specifically, several key technologies (such as 'powerbi', 'sqlserver', and 'asp.netcore') were fragmented across two or more distinct primary keys (skill_id) stemming from duplicate skill names. Uncovering these hidden redundancies ensured that market demand metrics were accurately consolidated rather than artificially split or underrepresented.
+*/

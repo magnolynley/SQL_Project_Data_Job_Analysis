@@ -25,3 +25,10 @@ ORDER BY
 demand_count DESC
 
 LIMIT 10
+/*
+Here's the breakdown of the most in-demand skills overall:
+SQL Dominance: SQL leads with 7,291 job mentions, outpacing the second most demanded skill by over 58%. It remains the single most critical technical skill for landing a data analyst role.
+Core Foundation Pair: SQL and Excel together represent over 52% of total demand among the top 5 skills, proving that data querying and spreadsheet processing form the baseline requirement for most positions.
+Programming vs. Visualization: Python (4,330 mentions) slightly edges out Tableau (3,745 mentions), reflecting a high employer demand for programmatic data handling alongside dashboarding capabilities.
+BI Tool Split: Tableau leads Power BI by 1,136 postings (a 43.5% lead in demand), though both remain essential enterprise visualization standards.
+*/

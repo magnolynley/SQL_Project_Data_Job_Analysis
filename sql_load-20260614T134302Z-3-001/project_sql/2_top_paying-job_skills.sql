@@ -31,13 +31,11 @@ With top_paying_job_skills AS
 order by 
 salary_year_avg DESC
 
-/*Insights from the chart
--SQL dominates the highest-paying Data Analyst positions, appearing in 8 out of 10 postings.
--Python is a close second, showing that programming skills are nearly as important as database skills.
--Tableau is the leading visualization tool, appearing more often than Power BI in this sample.
--The combination of SQL + Python + Tableau forms the core skill set for high-paying analyst roles.
--Cloud technologies (Snowflake, Azure, AWS) appear frequently, indicating that modern data analysts are expected to work with cloud data platforms.
--Collaboration tools like Jira, Confluence, GitLab, and Bitbucket suggest employers value analysts who can work effectively within engineering and product teams.*/
+/*Here's the breakdown of the skills required for the top-paying Data Analyst roles:
+
+The Big Three Foundation: SQL (8 postings), Python (7 postings), and Tableau (6 postings) are the most frequently requested skills among top-earning job descriptions.
+Data Science & Analytics Tools: R, Pandas, and Snowflake follow closely, proving that analytical libraries and cloud data warehousing are key drivers in high-paying roles.
+Cloud & Collaboration Tech: Cloud platforms (AWS, Azure) and developer collaboration tools (GitLab, Jira, Bitbucket) appear regularly across top-tier listings, averaging salaries between $189k and $222k.*/
 
 /*[
   {
